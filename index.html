@@ -1,97 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<title>MHVRA Maps</title>
+	
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
 
-    <title>MHVRA Maps</title>
-
-    <link
-      rel="shortcut icon"
-      type="image/x-icon"
-      href="docs/images/favicon.ico"
-    />
-
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      crossorigin=""
-    />
-    <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-      crossorigin=""
-    ></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <script src="https://unpkg.com/leaflet-legend@1.0.0/dist/leaflet-legend.js"></script>
 
-    <style>
-      html,
-      body {
-        height: 100%;
-        margin: 0;
-      }
-      .leaflet-container {
-        height: 100%;
-        width: 100%;
-        max-width: 100%;
-        max-height: 100%;
-      }
-    </style>
-  </head>
-  <body>
-    <!--Create a html div for leaflet map-->
-    <div id="map" style="width: 100%; height: 100%"></div>
-   
-    <script>
-      //Create a leaflet map with the specified coordinates (125.5, -8.7) and zoom level (13)
-      var map = L.map("map", {
-        center: [-8.7, 125.5],
-        zoom: 9,
-      });
-      //Create a tile layer from open street map
-      var osm = L.tileLayer(
-        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }
-      ).addTo(map);
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		.leaflet-container {
+			height: 100%;
+			width: 100%;
+			max-width: 100%;
+			max-height: 100%;
+		}
+	</style>
 
-      // Add a WMS layer from GeoServer
-      //Floods
-      var Flood_W_RT100_1d_Current = L.tileLayer
-        .wms("http://35.219.4.85:8600/geoserver/wms", {
-          layers: "tls:I-Flood_W_RT100_6H_Current",
-          format: "image/png",
-          transparent: true,
-          tileSize: 256,
-        })
-        .addTo(map);
+	
+</head>
+<body>
 
-      //Create a layer control
-      var baseMaps = {
-        OSM: osm,
-      };
-      var overlays = {
-        Floods: Flood_W_RT100_1d_Current,
-      };
-      L.control.layers(baseMaps, overlays).addTo(map);
+<div id="map" style="width: 100%; height: 100%;"></div>
+<script>
 
-      //add a legend control for geoserver layer
-      var legend = L.control({ position: "bottomright" });
-      legend.onAdd = function (map) {
-        var div = L.DomUtil.create("div", "info legend");
-        // Define the legend content (you can customize this part)
-        div.innerHTML =
-          '<img src="http://35.219.4.85:8600/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=tls:I-Flood_W_RT100_1d_Current">';
-        return div;
-      };
-      legend.addTo(map);
+	var map = L.map('map').setView([-8.85, 125.75], 9);
 
-      
-    </script>
-  </body>
+	var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		maxZoom: 22,
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+	}).addTo(map);
+
+    var BaseOpenTopo = L.tileLayer('https://tile.opentopomap.org/{z}/{x}/{y}.png', {
+		maxZoom: 22,
+		attribution: '@Open Topo'
+	})
+
+
+    // Add a WMS layer from GeoServer
+    //Floods
+var Flood_W_RT100_1d_Current = L.tileLayer.wms('http://35.219.4.85:8600/geoserver/wms', {
+    layers: 'tls:I-Flood_W_RT100_1d_Current',
+    format: 'image/png',
+    transparent: true,
+    tileSize: 256,
+});
+
+var Flood_D_RT100_1d_Current = L.tileLayer.wms('http://35.219.4.85:8600/geoserver/wms', {
+    layers: 'tls:I-Flood_D_RT100_1d_Current',
+    format: 'image/png',
+    transparent: true,
+    tileSize: 256,
+});
+
+var Flood_W_RT100_6H_Current = L.tileLayer.wms('http://35.219.4.85:8600/geoserver/wms', {
+    layers: 'tls:I-Flood_W_RT100_6H_Current',
+    format: 'image/png',
+    transparent: true,
+    tileSize: 256,
+});
+
+//Landslide Maps
+var Landslide = L.tileLayer.wms('http://35.219.4.85:8600/geoserver/wms', {
+    layers: 'tls:MassMov_ExtremeValueUsingSoilMap_SoilSaturation_0.89999998_SF_1',
+    format: 'image/png',
+    transparent: true,
+    tileSize: 256,
+}).addTo(map);
+
+var baseMaps = {
+    "OpenStreetMap": tiles,
+    "Open Topo": BaseOpenTopo,
+};
+
+var overlays = {
+    "Flood_W_rt100_current_1D": Flood_W_RT100_1d_Current,
+    "Flood_D_RT100_1d_Current":Flood_D_RT100_1d_Current,
+    "Flood_W_RT100_6H_Current":Flood_W_RT100_6H_Current,
+    "Landslide":Landslide,
+
+};
+
+var layerControl = L.control.layers(baseMaps, overlays).addTo(map);
+
+        // Add Legend Control
+        var legendUrl = 'http://34.101.173.42:8600/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=tls:I-Flood_W_RT100_6H_Current';
+        var legendControl = L.control.legend({ position: 'bottomright' });
+        legendControl.addTo(map);
+        legendControl.addLegend(legendUrl, 'Legend');
+
+        // Set the initial map view
+        map.setView([-8.85, 125.75], 9);
+</script>
+
+
+</body>
 </html>
-
